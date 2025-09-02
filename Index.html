@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora ATR</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Calculadora ATR</h1>
+    <div class="sub">Insira os valores a seguir:</div>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <label class="field">
+        <div class="label">PBU <span class="hint">110–260</span></div>
+        <div class="input">
+          <input id="pbu" type="number" step="1" placeholder="ex.: 157.40">
+          <span class="suffix">u.a.</span>
+        </div>
+      </label>
+      <label class="field">
+        <div class="label">Brix do caldo <span class="hint">8,00–27,00</span></div>
+        <div class="input">
+          <input id="brix" type="number" step="0.01" placeholder="ex.: 18.76">
+          <span class="suffix">%</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="row mt-10">
+      <label class="field">
+        <div class="label">Leitura sacarimétrica (LS)</div>
+        <div class="input"><input id="ls" type="number" step="0.01" placeholder="ex.: 60.78"></div>
+      </label>
+      <label class="field">
+        <div class="label">Temperatura</div>
+        <div class="input">
+          <input id="temp" type="number" step="0.1" value="20">
+          <span class="suffix">°C</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="toolbar mt-12">
+      <button class="btn" onclick="calc()">Calcular</button>
+      <button class="btn ghost" onclick="limpar()">Limpar</button>
+      <label class="switch"><input type="checkbox" id="halfEven" checked></label>
+    </div>
+    <div id="msg" class="status"></div>
+  </section>
+
+  <section class="card" id="outputs" style="display:none;">
+    <div class="out">
+      <div class="kv"><h3>Pol% Caldo</h3><div class="val" id="polc"></div></div>
+      <div class="kv"><h3>Pureza (Pza)</h3><div class="val" id="pza"></div></div>
+      <div class="kv"><h3>PCC (Pol% Cana)</h3><div class="val" id="pcc"></div></div>
+      <div class="kv"><h3>Fibra% Cana</h3><div class="val" id="fibra"></div></div>
+      <div class="kv"><h3>ATR</h3><div class="val" id="atr"></div></div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+
+  <footer class="footer">
+  Desenvolvido por <a href="https://github.com/Juli-Soares" target="_blank">Juliana Soares</a>
+</footer>
+
+</body>
+</html>
