@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Calculadora ATR</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4caf50">
 </head>
 <body>
   <header>
@@ -67,6 +69,12 @@
   <footer class="footer">
   Desenvolvido por <a href="https://github.com/Juli-Soares" target="_blank">Juliana Soares</a>
 </footer>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(() => console.log('Service Worker registrado!'));
+  }
+</script>
 
 </body>
 </html>
