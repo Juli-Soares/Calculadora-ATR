@@ -1,6 +1,6 @@
 {
-  "name": "Calculadora ATR",
-  "short_name": "ATR PIMS",
+  "name": "Calculadora PCTS",
+  "short_name": "Calc PCTS",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

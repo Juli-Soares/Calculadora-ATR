@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculadora ATR</title>
+  <title>Cálculo de Análises</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4caf50">
 </head>
 <body>
   <header>
-    <h1>Calculadora ATR</h1>
+    <h1>Cálculo de ATR</h1>
     <div class="sub">Insira os valores a seguir:</div>
   </header>
 
@@ -24,7 +24,7 @@
         </div>
       </label>
       <label class="field">
-        <div class="label">Brix do caldo <span class="hint">8,00–27,00</span></div>
+        <div class="label">Brix do caldo <span class="hint">8–27</span></div>
         <div class="input">
           <input id="brix" type="number" step="0.01" placeholder="ex.: 18.76">
           <span class="suffix">%</span>
@@ -34,7 +34,7 @@
 
     <div class="row mt-10">
       <label class="field">
-        <div class="label">Leitura sacarimétrica (LS)</div>
+        <div class="label">Leitura sacarimétrica</div>
         <div class="input"><input id="ls" type="number" step="0.01" placeholder="ex.: 60.78"></div>
       </label>
       <label class="field">
@@ -49,17 +49,16 @@
     <div class="toolbar mt-12">
       <button class="btn" onclick="calc()">Calcular</button>
       <button class="btn ghost" onclick="limpar()">Limpar</button>
-      <label class="switch"><input type="checkbox" id="halfEven" checked></label>
     </div>
     <div id="msg" class="status"></div>
   </section>
 
   <section class="card" id="outputs" style="display:none;">
     <div class="out">
-      <div class="kv"><h3>Pol% Caldo</h3><div class="val" id="polc"></div></div>
-      <div class="kv"><h3>Pureza (Pza)</h3><div class="val" id="pza"></div></div>
-      <div class="kv"><h3>PCC (Pol% Cana)</h3><div class="val" id="pcc"></div></div>
-      <div class="kv"><h3>Fibra% Cana</h3><div class="val" id="fibra"></div></div>
+      <div class="kv"><h3>Pol. Caldo</h3><div class="val" id="polc"></div></div>
+      <div class="kv"><h3>Pureza</h3><div class="val" id="pza"></div></div>
+      <div class="kv"><h3>PCC</h3><div class="val" id="pcc"></div></div>
+      <div class="kv"><h3>Fibra</h3><div class="val" id="fibra"></div></div>
       <div class="kv"><h3>ATR</h3><div class="val" id="atr"></div></div>
     </div>
   </section>
