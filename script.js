@@ -75,9 +75,9 @@ function calc(){
 
   // Mensagem
   const warnings = [];
-  if (brix < 8 || brix > 27) warnings.push("BRIX fora de 8–27");
-  if (pbu  < 110 || pbu  > 260) warnings.push("PBU fora de 110–260");
-  if (pza  < 65 || pza  > 96) warnings.push("Pureza fora de 65–96");
+  if (brix < 8 || brix > 27) warnings.push("BRIX fora do limite 8–27");
+  if (pbu  < 110 || pbu  > 260) warnings.push("PBU fora do limite 110–260");
+  if (pza  < 65 || pza  > 96) warnings.push("Pureza fora do limite 65–96");
   if (warnings.length){ msg.textContent = "Atenção: " + warnings.join(" • "); msg.classList.add("warn"); }
   else { msg.textContent = "Cálculo concluído."; msg.classList.add("ok"); }
 
