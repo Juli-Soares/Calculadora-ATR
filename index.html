@@ -29,14 +29,14 @@
       <label class="field">
         <div class="label">PBU <span class="hint">110–260</span></div>
         <div class="input">
-          <input id="pbu" type="number" step="1" placeholder="ex.: 157.40">
+          <input id="pbu" type="number" inputmode="numeric" pattern="[0-9]*" step="1" placeholder="ex.: 157.40">
           <span class="suffix"> </span>
         </div>
       </label>
       <label class="field">
         <div class="label">Brix do caldo <span class="hint">8–27</span></div>
         <div class="input">
-          <input id="brix" type="number" step="0.01" placeholder="ex.: 18.76">
+          <input id="brix" type="number" inputmode="decimal" pattern="[0-9]*" step="0.01" placeholder="ex.: 18.76">
           <span class="suffix">%</span>
         </div>
       </label>
@@ -45,7 +45,7 @@
     <div class="row mt-10">
       <label class="field">
         <div class="label">Leitura sac.</div>
-        <div class="input"><input id="ls" type="number" step="0.01" placeholder="ex.: 60.78"></div>
+        <input id="ls" type="number" inputmode="decimal" pattern="[0-9]*" step="0.01" placeholder="ex.: 60.78">
       </label>
       <label class="field">
         <div class="label">Temperatura</div>
