@@ -1,12 +1,16 @@
 {
-  "name": "Calculadora PCTS",
-  "short_name": "Calc PCTS",
+  "name": "Calculadora ATR",
+  "short_name": "Calc ATR",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b0c10",
   "theme_color": "#0b0c10",
   "icons": [
-
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
     {
       "src": "./icon-512.png",
       "sizes": "512x512",

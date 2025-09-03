@@ -1,4 +1,4 @@
-/* ================== UTIL & ROUND ================== */
+/* =============== Funções Utilitárias de Arredondamento ================ */
 function roundHalfEven(x, n){
   const p = Math.pow(10, n);
   const y = x * p;
@@ -17,14 +17,14 @@ function fmt(x, n, halfEven){
 }
 const $ = (id) => document.getElementById(id);
 
-/* ================== UI BASICS ================== */
+/* ================== Função Reset da Interface ================== */
 function limpar(){
   ["pbu","brix","ls","temp"].forEach(id => $(id).value = (id==="temp" ? "20" : ""));
   $("outputs").style.display = "none";
   const m = $("msg"); m.textContent=""; m.className="status";
 }
 
-/* ================== CÁLCULO (MODO PIMS) ================== */
+/* ================== CÁLCULO DE ACORDO COM OS PARÂMETROS DA CONSECANA ================== */
 function calc(){
   const halfEven = $("halfEven")?.checked ?? true;
   const pbu  = parseFloat($("pbu").value);
@@ -73,7 +73,7 @@ function calc(){
   const atr_calc = (pcc * 9.36814) + (arc * 8.9);
   const atr = roundN(atr_calc, 2, halfEven);
 
-  // Mensagem
+  // Mensagem de alerta
   const warnings = [];
   if (brix < 8 || brix > 27) warnings.push("BRIX fora do limite 8–27");
   if (pbu  < 110 || pbu  > 260) warnings.push("PBU fora do limite 110–260");
@@ -92,11 +92,7 @@ function calc(){
 }
 
 /* ================== PULAR PARA O PRÓXIMO CAMPO ================== */
-/* robusto para:
-   - script no fim do body (DOMContentLoaded já passou)
-   - iOS/Android (Enter às vezes vira 'Go/Next/Done')
-   - auto-pulo quando “parece preenchido”
-*/
+
 function setupAutoTab() {
   const ordem = ["pbu", "brix", "ls", "temp"];
   const falta = ordem.filter(id => !$(id));
@@ -106,7 +102,7 @@ function setupAutoTab() {
   }
   console.log("AutoTab: inputs OK", ordem);
 
-  // Regras para considerar “preenchido” (ajuste se quiser)
+  // Regras para considerar o campo preenchido
   const podePular = {
     pbu:  (v) => /^\d{3}\.\d$/.test(v),      
     brix: (v) => /^\d{2}\.\d{2}$/.test(v),     
@@ -119,7 +115,6 @@ function setupAutoTab() {
     const proxId = ordem[i + 1];
     const proximo = proxId ? $(proxId) : null;
 
-    // ENTER / TAB -> próximo (ou calcula no último)
     ["keydown","keyup"].forEach(evt => {
       el.addEventListener(evt, (e) => {
         if (e.key === "Enter" || e.key === "Tab") {
@@ -128,14 +123,13 @@ function setupAutoTab() {
             proximo.focus();
             if (proximo.select) proximo.select();
           } else {
-            // último campo: ENTER dispara cálculo
             if (e.key === "Enter") calc();
           }
         }
       });
     });
 
-    // AUTO-PULO quando a regra considerar “preenchido”
+    // Pula automaticamente quando a regra considerar preenchido
     if (proximo) {
       // 'input' cobre mobile; 'change' cobre perda de foco
       ["input","change","blur"].forEach(evt => {
