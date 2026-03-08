@@ -8,8 +8,7 @@ function roundHalfEven(x, n){
   return Math.round(y) / p;
 }
 function roundN(x, n, halfEven){
-  return halfEven ? roundHalfEven(x, n)
-                  : Math.round((x + Number.EPSILON) * 10**n) / 10**n;
+  return halfEven ? roundHalfEven(x, n) : Math.round((x + Number.EPSILON) * 10**n) / 10**n;
 }
 function fmt(x, n, halfEven){
   if (!isFinite(x)) return "—";
@@ -17,21 +16,82 @@ function fmt(x, n, halfEven){
 }
 const $ = (id) => document.getElementById(id);
 
+/* ================== VARIÁVEIS DA RODADA ================== */
+let rodadaAtual = [];
+
+/* ================== GERENCIAMENTO DA RODADA ================== */
+function adicionarARodada(valorATR) {
+  rodadaAtual.push(valorATR);
+  atualizarInterfaceRodada();
+}
+
+function atualizarInterfaceRodada() {
+  const section = $("historico");
+  const lista = $("lista-analises");
+  const mediaDisplay = $("media-atr");
+  const countDisplay = $("count-analises");
+
+  if (rodadaAtual.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "block";
+  
+  // Calcula a média
+  const soma = rodadaAtual.reduce((acc, val) => acc + val, 0);
+  const media = soma / rodadaAtual.length;
+  const halfEven = true; // Mantém o padrão bancário para a média
+
+  mediaDisplay.textContent = fmt(media, 2, halfEven);
+  countDisplay.textContent = `${rodadaAtual.length} análise${rodadaAtual.length > 1 ? 's' : ''}`;
+
+  // Monta a lista visual (mostrando do último para o primeiro)
+  lista.innerHTML = rodadaAtual.map((v, i) => 
+    `<div style="display:flex; justify-content:space-between; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
+        <span style="color: var(--muted);">Análise ${i + 1}</span>
+        <strong>${fmt(v, 2, halfEven)}</strong>
+    </div>`
+  ).reverse().join('');
+}
+
+function limparRodada() {
+  if (confirm("Deseja zerar todas as análises desta rodada?")) {
+    rodadaAtual = [];
+    atualizarInterfaceRodada();
+  }
+}
+
+function copiarMedia() {
+  const mediaText = $("media-atr").textContent;
+  if (mediaText && mediaText !== "—") {
+    navigator.clipboard.writeText(mediaText).then(() => {
+      const btn = document.querySelector("#historico .btn.success");
+      const originalText = btn.textContent;
+      btn.textContent = "Copiado!";
+      setTimeout(() => btn.textContent = originalText, 2000);
+    });
+  }
+}
+
 /* ================== Função Reset da Interface ================== */
 function limpar(){
   ["pbu","brix","ls","temp"].forEach(id => $(id).value = (id==="temp" ? "20" : ""));
   $("outputs").style.display = "none";
   const m = $("msg"); m.textContent=""; m.className="status";
+  $("pbu").focus(); // Volta o cursor pro primeiro campo pra acelerar a próxima
 }
 
-/* ================== CÁLCULO DE ACORDO COM OS PARÂMETROS DA CONSECANA ================== */
+/* ================== CÁLCULO DE ACORDO COM CONSECANA ================== */
 function calc(){
-  const halfEven = $("halfEven")?.checked ?? true;
-  const pbu  = parseFloat($("pbu").value);
-  const brix = parseFloat($("brix").value);
-  const ls   = parseFloat($("ls").value);
-  const T    = parseFloat($("temp").value);
+  const halfEven = true;
+  // Trata a vírgula caso o usuário digite ao invés de ponto
+  const pbu  = parseFloat($("pbu").value.replace(',', '.'));
+  const brix = parseFloat($("brix").value.replace(',', '.'));
+  const ls   = parseFloat($("ls").value.replace(',', '.'));
+  const T    = parseFloat($("temp").value.replace(',', '.'));
   const msg  = $("msg");
+  
   msg.textContent = ""; msg.className = "status";
 
   if ([pbu,brix,ls,T].some(v => isNaN(v))){
@@ -40,48 +100,33 @@ function calc(){
     return;
   }
 
-  // 1) Fibra (fixa 2c)
-  const fibra_calc = 0.379 + 0.0919 * pbu;
-  const fibra = roundN(fibra_calc, 2, halfEven);
-
-  // 2) LC
+  const fibra = roundN(0.379 + 0.0919 * pbu, 2, halfEven);
   const lc = ls * (1 + 0.000255 * (T - 20));
-
-  // 3) Pol% caldo (fixa 2c)
-  const pol_c_calc = lc * (0.2605 - 0.0009882 * brix);
-  const pol_c = roundN(pol_c_calc, 2, halfEven);
-
-  // 4) Pureza (fixa 2c) a partir do Pol arredondado
-  const pza_calc = 100 * (pol_c / brix);
-  const pza = roundN(pza_calc, 2, halfEven);
-
-  // 5) FPza
+  const pol_c = roundN(lc * (0.2605 - 0.0009882 * brix), 2, halfEven);
+  const pza = roundN(100 * (pol_c / brix), 2, halfEven);
   const fpza = (pza >= 82.28 && pza <= 84.28) ? 1 : (pza / 83.28);
-
-  // 6) C
   const C = 1.0313 - 0.00575 * fibra;
-
-  // 7) PCC (3c)
-  const pcc_calc = pol_c * (1 - 0.01 * fibra) * C * fpza;
-  const pcc = roundN(pcc_calc, 3, halfEven);
-
-  // 8) AR e ARC
+  const pcc = roundN(pol_c * (1 - 0.01 * fibra) * C * fpza, 3, halfEven);
   const ar  = 6.9539 - 0.0688 * pza;
   const arc = ar * (1 - 0.01 * fibra) * C;
-
-  // 9) ATR (2c) usando PCC exibido
+  
+  // ATR Final
   const atr_calc = (pcc * 9.36814) + (arc * 8.9);
   const atr = roundN(atr_calc, 2, halfEven);
 
-  // Mensagem de alerta
   const warnings = [];
-  if (brix < 8 || brix > 27) warnings.push("BRIX fora do limite 8–27");
-  if (pbu  < 110 || pbu  > 260) warnings.push("PBU fora do limite 110–260");
-  if (pza  < 65 || pza  > 96) warnings.push("Pureza fora do limite 65–96");
-  if (warnings.length){ msg.textContent = "Atenção: " + warnings.join(" • "); msg.classList.add("warn"); }
-  else { msg.textContent = "Cálculo concluído."; msg.classList.add("ok"); }
+  if (brix < 8 || brix > 27) warnings.push("BRIX fora do limite");
+  if (pbu  < 110 || pbu  > 260) warnings.push("PBU fora do limite");
+  if (pza  < 65 || pza  > 96) warnings.push("Pureza fora do limite");
+  
+  if (warnings.length){ 
+      msg.textContent = "Atenção: " + warnings.join(" • "); 
+      msg.classList.add("warn"); 
+  } else { 
+      msg.textContent = "Cálculo concluído. Adicionado à rodada."; 
+      msg.classList.add("ok"); 
+  }
 
-  // Saídas
   $("polc").textContent  = fmt(pol_c, 2, halfEven);
   $("pza").textContent   = fmt(pza, 2, halfEven);
   $("pcc").textContent   = fmt(pcc, 3, halfEven);
@@ -89,23 +134,21 @@ function calc(){
   $("atr").textContent   = fmt(atr, 2, halfEven);
 
   $("outputs").style.display = "block";
+
+  // SALVA NA RODADA
+  adicionarARodada(atr);
+  
+  // Limpa os campos automaticamente para a próxima análise (opcional, comente se não quiser)
+  ["pbu","brix","ls"].forEach(id => $(id).value = "");
+  $("pbu").focus();
 }
 
 /* ================== PULAR PARA O PRÓXIMO CAMPO ================== */
-
 function setupAutoTab() {
   const ordem = ["pbu", "brix", "ls", "temp"];
-  const falta = ordem.filter(id => !$(id));
-  if (falta.length){
-    console.error("IDs não encontrados no HTML:", falta);
-    return;
-  }
-  console.log("AutoTab: inputs OK", ordem);
-
-  // Regras para considerar o campo preenchido
   const podePular = {
-    pbu:  (v) => /^\d{3}\.\d$/.test(v),      
-    brix: (v) => /^\d{2}\.\d{2}$/.test(v),     
+    pbu:  (v) => /^\d{3}\.\d+$/.test(v),      
+    brix: (v) => /^\d{2}\.\d{2}$/.test(v),    
     ls:   (v) => /^\d{2}\.\d{2}$/.test(v),
     temp: (_) => false
   };
@@ -129,9 +172,7 @@ function setupAutoTab() {
       });
     });
 
-    // Pula automaticamente quando a regra considerar preenchido
     if (proximo) {
-      // 'input' cobre mobile; 'change' cobre perda de foco
       ["input","change","blur"].forEach(evt => {
         el.addEventListener(evt, () => {
           if (podePular[id](el.value)) {
@@ -145,22 +186,12 @@ function setupAutoTab() {
 }
 
 /* ================== BOOT ================== */
-// Se houver erro de JS, mostre no console (ajuda a diagnosticar)
-window.addEventListener("error", (e) => {
-  console.error("Erro JS:", e.message);
-});
-
 function boot(){
-  // garante que elementos já existem
   setupAutoTab();
-  console.log("boot ok");
 }
 
-// funciona independente de onde o script é incluído
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", boot);
 } else {
   boot();
 }
-
-

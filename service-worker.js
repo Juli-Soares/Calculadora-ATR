@@ -1,4 +1,4 @@
-const CACHE_NAME = "atr-pwa-v1";
+const CACHE_NAME = 'calc-atr-v2';
 const FILES_TO_CACHE = [
   "./index.html",
   "./style.css",
